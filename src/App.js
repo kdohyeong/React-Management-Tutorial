@@ -5,7 +5,7 @@ class App extends Component {
   render(){
   return (
     <div className="gray-background">
-      <h2>let's develop management system!</h2>
+      <h2>let's develop management system!!!</h2>
     </div>
   );
   }
