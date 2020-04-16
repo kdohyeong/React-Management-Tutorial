@@ -9,10 +9,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+  res.header("Access-Control-Allow-Origin", "http://localhost:3000"); //////서버 주소 다른거 허용해주는 부분
+
+  res.header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");  /// 메소드가 다른거 허용해주는 부분
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();   
-});               //////서버 주소 다른거 허용해주는 부분
+});               
 
 
 
@@ -38,7 +40,7 @@ const connection = mysql.createConnection(
 
 app.get('/api/customers', (req, res) => {
     connection.query(
-    'SELECT * FROM CUSTOMER',
+    'SELECT * FROM CUSTOMER WHERE isDeleted = 0',
     (err, rows, fields) => {
     res.send(rows);
         }
@@ -49,7 +51,7 @@ app.get('/api/customers', (req, res) => {
 app.use('/image', express.static('./upload'));
 app.post('/api/customers', upload.single('image'), (req, res) => {
 
-    let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
+    let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?, now(), 0)';
     let image = '/image/' + req.file.filename;
     let name = req.body.name;
     let birthday = req.body.birthday;
@@ -64,6 +66,19 @@ app.post('/api/customers', upload.single('image'), (req, res) => {
     }
   )
 });
+
+
+app.delete('/api/customers/:id', (req, res) => {
+  let sql = 'UPDATE CUSTOMER SET isDeleted = 1 WHERE id = ?';
+  let params = [req.params.id];
+  connection.query(sql, params,
+  (err, rows, fields) => {
+  res.send(rows);
+  }
+  )
+  });
+  
+
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
