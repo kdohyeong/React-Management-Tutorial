@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Customer from './Components/Customer'
+import CustomerAdd from './Components/CustomerAdd'
 import './App.css';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -9,6 +10,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 const styles = theme => ({
       root: {
@@ -27,12 +29,24 @@ const styles = theme => ({
 
 
 class App extends Component {
-
-  state = {
+  constructor(props){
+    super(props);
+    this.state = {
     customers: "",
     complited: 0
   }
+}
 
+  stateRefresh = () => {
+    this.setState({
+      customers: '',
+      completed: 0
+    });
+    this.callApi()
+    .then(res => this.setState({customers: res}))
+    .catch(err => console.log(err));
+    }
+  
   componentDidMount(){
     this.timer = setInterval(this.progress, 20);
     this.callApi()
@@ -58,6 +72,7 @@ class App extends Component {
     render() {
       const { classes } = this.props;
       return (
+        <div>
           <Paper className={classes.root}>
           <Table className={classes.table}>
           <TableHead>
@@ -69,8 +84,8 @@ class App extends Component {
           <TableCell>성별</TableCell>
           <TableCell>직업</TableCell>
           </TableRow>
-          </TableHead>
-          <TableBody>
+            </TableHead>
+             <TableBody>
           {this.state.customers ? this.state.customers.map(c => {
           return <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
           }): 'loading'}
@@ -81,12 +96,15 @@ class App extends Component {
             </TableCell>
           </TableRow>
 
-          </TableBody>
-          </Table>
+             </TableBody>
+            </Table>
           </Paper>
+          <CustomerAdd stateRefresh={this.stateRefresh}></CustomerAdd>
+          </div>
       );
     }
-}
+  }
+
 
 export default withStyles(styles)(App);
 

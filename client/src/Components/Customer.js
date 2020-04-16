@@ -18,3 +18,5 @@ return (
 }
 
 export default Customer;
+
+// <TableCell><img src={"http://localhost:5000"+this.props.image} alt="profile"/></TableCell> 로컬에 있는 파일은 이런식으로 사용
